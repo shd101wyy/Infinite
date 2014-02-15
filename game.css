@@ -1,0 +1,23 @@
+html, body
+{
+    background-color: black;
+    margin : 0px;
+    padding: 0px;
+}
+canvas,
+img {
+    image-rendering: crisp-edges;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: optimize-contrast;
+    -ms-interpolation-mode: nearest-neighbor;
+}
+#Game_Canvas
+{
+    width: 640;
+    height: 640;
+    background-color: #454545;
+    position: absolute;
+    left: 100px;
+    top: 100px;
+}
