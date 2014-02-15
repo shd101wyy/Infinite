@@ -1,7 +1,7 @@
 var canvas = document.getElementById("Game_Canvas");
 var context = canvas.getContext("2d");
 canvas.width = 640;
-canvas.height = 640;
+canvas.height = 64 * 12;
 canvas.style.width = canvas.width;
 canvas.style.height = canvas.height;
 function clearScreen()
@@ -10,7 +10,6 @@ function clearScreen()
 }
 function Prelude() 
 {
-	console.log("ENTER HERE");
 	document.body.style.background = "black";
 	canvas.style.background = "#454545";
 
@@ -68,6 +67,8 @@ function ShowMenu()
 
 	context.fillText("Level  : " + character.level, 100, 300);
 	context.fillText("HP      : " + character.hp, 100, 350);
+	context.fillText("EXP      : " + character.experience, 100, 400);
+
 }
 var KEYS = [];
 var SHOW_MENU = 0;
@@ -96,7 +97,9 @@ var Character = function()
 	this.y = 5;
 	this.level = 1;
 	this.hp = 30;
+	this.experience = 0;
 	this.attack_damage = 5;
+	this.evasion = 0.005; // evasion
 	this.draw = function()
 	{
 		if(this.count % 20 == 0)
@@ -104,6 +107,17 @@ var Character = function()
 		else
 			context.drawImage(this.image[1], this.x * 64, this.y * 64, 64, 64);
 		this.count++;
+	}
+}
+// killed enemy, get experience and check levelup
+function Character_CheckLevelUp(killed_enemy)
+{
+	character.experience += killed_enemy.exp;
+	console.log("exp now : " + character.experience);
+	if(character.experience >= character.hp * 10)
+	{
+		character.level += 1; // level up;
+		character.experience -=  character.hp * 10; // update experience
 	}
 }
 var Slime = function()
@@ -116,6 +130,8 @@ var Slime = function()
 	this.hp = 20;
 	this.attack_damage = 1;
 	this.hostile = 4;
+	this.exp = 20;
+	this.name = "Slime";
 	this.draw = function()
 	{
 		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
@@ -220,12 +236,26 @@ function Enemy_Update(attacked_enemy)
 		if((character.y == e.y && (e.x == character.x - 1 || e.x == character.x + 1)) 
 			|| (character.x == e.x && (e.y == character.y - 1 || e.y == character.y + 1)))
 		{
-			console.log("Attacked by Enemy");
-			// attack player
-			character.hp -= e.attack_damage;
+			if( Math.random() <= character.evasion )
+			{
+				context.fillText(e.name + " tried to attack, but you evaded!", 10, 680);
+			}
+			else
+			{
+				context.fillText("Attacked by " + e.name + ",  Losing Hp: " + e.attack_damage, 10, 680);
+				// attack player
+				character.hp -= e.attack_damage;
+				if(character.hp <= 0)
+				{
+					context.fillText("Attacked by " + e.name + ",  Losing Hp: " + e.attack_damage, 10, 680);
+					context.fillText(e.name + " killed you!", 10, 720);
+				}
+			}
+			
 			e.draw();
 		}
 		else{
+			var moved = false;
 			var hostile = e.hostile;
 			var distance = Math.sqrt(Math.pow(character.x - e.x, 2) + Math.pow(character.y - e.y, 2));
 			if(distance < hostile)
@@ -238,35 +268,41 @@ function Enemy_Update(attacked_enemy)
 				{
 					e.x += 1;
 					console.log(e.x);
+					moved = true;
 				}
-				else if(character.y == e.y && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x-1, e.y) == null) // move horizentally +
+				if(moved == false && character.y == e.y && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x-1, e.y) == null) // move horizentally +
 				{
 					e.x -= 1;
 					console.log(e.x);
+					moved = true;
 				}
-				else if (character.x == e.x && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+				if (moved == false && character.x == e.x && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
 				{
 					e.y += 1;
 					console.log(e.y);
+					moved = true;
 				}
-				else if (character.x == e.x && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+				if (moved == false && character.x == e.x && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
 				{
 					e.y -= 1;
 					console.log(e.y);
+					moved = true;
 				}
 
-				else if(d_x < d_y) // move horizentally
+				if(d_x < d_y) // move horizentally
 				{
 					console.log("Move Horizontally 2");
-					if(character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null) // move horizentally +
+					if(moved == false && character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null) // move horizentally +
 					{
 						e.x += 1;
 						console.log(e.x);
+						moved = true;
 					}
-					else if(character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y) == null) // move horizentally +
+					if(moved == false && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y) == null) // move horizentally +
 					{
 						e.x -= 1;
 						console.log(e.x);
+						moved = true;
 					}
 				}
 				else // move vertically
@@ -275,13 +311,14 @@ function Enemy_Update(attacked_enemy)
 					console.log(character.y - e.y)
 					console.log(map.collision[e.x][e.y + 1])
 					console.log(map.collision[e.x][e.y - 1])
-					if (character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+					if (moved == false && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
 					{
 						e.y += 1;
 						console.log("Move Vertically 2 Down");
 						console.log(e.y);
+						moved = true;
 					}
-					else if (character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+					if (moved == false && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
 					{
 						e.y -= 1;
 						console.log("Move Vertically 2 Up");
@@ -317,7 +354,6 @@ function enterGameWorld()
 	var t = 1000/fps;
 	setInterval(function()
 	{
-		console.log("ETNER HERE");
 		// check keycode
 		if(KEYS[38] && !SHOW_MENU)  // move up
 		{
@@ -336,6 +372,7 @@ function enterGameWorld()
 				{
 					alert("Killed");
 					Enemy_Delete(enemy);
+					Character_CheckLevelUp(enemy);
 				}
 				else
 				{
@@ -366,6 +403,7 @@ function enterGameWorld()
 				{
 					alert("Killed");
 					Enemy_Delete(enemy);
+					Character_CheckLevelUp(enemy);
 				}
 				else
 				{
@@ -395,8 +433,9 @@ function enterGameWorld()
 				enemy.hp -= character.attack_damage;
 				if(enemy.hp <= 0)
 				{
-					alert("Killed");
+					context.fillText("You killed " + enemy.name, 10, 680);
 					Enemy_Delete(enemy);
+					Character_CheckLevelUp(enemy);
 				}
 				else
 				{
@@ -429,6 +468,7 @@ function enterGameWorld()
 				{
 					alert("Killed");
 					Enemy_Delete(enemy);
+					Character_CheckLevelUp(enemy);
 				}
 				else
 				{
