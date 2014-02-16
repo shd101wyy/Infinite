@@ -19,7 +19,7 @@ function Prelude()
 	
 	context.font = "32px Arial bold";
 	context.fillStyle = "white";
-	context.fillText("Welcome to the World of Infinity.",100,150);
+	context.fillText("Welcome to the World of Infinity. Version 0.1",100,150);
 	//context.fillText("This world doesn't have any light.", 100, 200);
 	//context.fillText("Everything is in dark...", 100, 250);
 
@@ -340,8 +340,26 @@ var water_image = new Image(); water_image.src = "./Water.png";
 var sand_image = new Image(); sand_image.src = "./Sand.png";
 var stone_image = new Image(); stone_image.src = "./Stone.png";
 var attack_effect2 = new Image(); attack_effect2.src = "./Attack_Effect2.png";
+
+/*
+	Tree Resources
+*/
+var Tree = function()
+{
+	this.image = tree_image;
+	this.hp = 200 + Math.random()* 10;
+	this.x = 0;
+	this.y = 0;
+	this.exp = 5;
+	this.draw = function()
+	{
+		context.drawImage(this.image, this.x * 64, this.y * 64, 64, 64);
+	}
+}
+
 function enterGameWorld()
 {
+	document.getElementById("background_ancient_music").play();
 	map.draw();
 	character.draw();
 
@@ -366,11 +384,13 @@ function enterGameWorld()
 			var enemy = Enemy_Exist(character.x, character.y);
 			if(enemy !== null)
 			{
+				// play soung
+				document.getElementById("punch_sound").play();
 				// find enemy, attack
 				enemy.hp -= character.attack_damage;
 				if(enemy.hp <= 0)
 				{
-					alert("Killed");
+					context.fillText("You killed " + enemy.name, 10, 680);
 					Enemy_Delete(enemy);
 					Character_CheckLevelUp(enemy);
 				}
@@ -397,11 +417,13 @@ function enterGameWorld()
 			var enemy = Enemy_Exist(character.x, character.y);
 			if(enemy !== null)
 			{
+				// play soung
+				document.getElementById("punch_sound").play();
 				// find enemy, attack
 				enemy.hp -= character.attack_damage;
 				if(enemy.hp <= 0)
 				{
-					alert("Killed");
+					context.fillText("You killed " + enemy.name, 10, 680);
 					Enemy_Delete(enemy);
 					Character_CheckLevelUp(enemy);
 				}
@@ -429,6 +451,8 @@ function enterGameWorld()
 			var enemy = Enemy_Exist(character.x, character.y);
 			if(enemy !== null)
 			{
+				// play soung
+				document.getElementById("punch_sound").play();
 				// find enemy, attack
 				enemy.hp -= character.attack_damage;
 				if(enemy.hp <= 0)
@@ -462,11 +486,13 @@ function enterGameWorld()
 			var enemy = Enemy_Exist(character.x, character.y);
 			if(enemy !== null)
 			{
+				// play soung
+				document.getElementById("punch_sound").play();
 				// find enemy, attack
 				enemy.hp -= character.attack_damage;
 				if(enemy.hp <= 0)
 				{
-					alert("Killed");
+					context.fillText("You killed " + enemy.name, 10, 680);
 					Enemy_Delete(enemy);
 					Character_CheckLevelUp(enemy);
 				}
