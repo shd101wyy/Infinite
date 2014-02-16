@@ -229,7 +229,7 @@ var Ghost = function(x, y)
 */
 var Map = function()
 {
-	var map = 
+	this.map = 
 	[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
 	 [0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
@@ -274,9 +274,9 @@ var Map = function()
 		{
 			for(var j = 0; j < 10; j++)
 			{
-				if( i + y >= map.length || j + x >= map[i].length || i + y < 0 || j + x < 0)
+				if( i + y >= this.map.length || j + x >= this.map[i].length || i + y < 0 || j + x < 0)
 					continue;
-				var v = map[i + y][j + x];
+				var v = this.map[i + y][j + x];
 				if(v == 0)
 					//context.drawImage(ground_image, j*64, i*64, 64, 64);
 					context.drawImage(grass_image, j*64, i*64, 64, 64);
@@ -333,7 +333,7 @@ function Enemy_Delete(enemy)
 	}
 }
 // update enemy position
-function Enemy_Update(attacked_enemy)
+function Enemy_Update(attacked_enemy, map)
 {
 	for(var i = 0; i < ENEMIES.length; i++)
 	{
@@ -370,25 +370,25 @@ function Enemy_Update(attacked_enemy)
 				// enter attack area.
 				var d_x = Math.abs(character.x - e.x);
 				var d_y = Math.abs(character.y - e.y);
-				if(character.y == e.y && character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x+1, e.y) == null) // move horizentally +
+				if(e.x + 1 < map.map[0].length && character.y == e.y && character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x+1, e.y) == null) // move horizentally +
 				{
 					e.x += 1;
 					console.log(e.x);
 					moved = true;
 				}
-				if(moved == false && character.y == e.y && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x-1, e.y) == null) // move horizentally +
+				if(e.x - 1 >= 0 && moved == false && character.y == e.y && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x-1, e.y) == null) // move horizentally +
 				{
 					e.x -= 1;
 					console.log(e.x);
 					moved = true;
 				}
-				if (moved == false && character.x == e.x && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+				if (e.y + 1 < map.map.length && moved == false && character.x == e.x && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
 				{
 					e.y += 1;
 					console.log(e.y);
 					moved = true;
 				}
-				if (moved == false && character.x == e.x && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+				if (e.y - 1 >= 0 && moved == false && character.x == e.x && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
 				{
 					e.y -= 1;
 					console.log(e.y);
@@ -398,13 +398,13 @@ function Enemy_Update(attacked_enemy)
 				if(d_x < d_y) // move horizentally
 				{
 					console.log("Move Horizontally 2");
-					if(moved == false && character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null) // move horizentally +
+					if(e.x + 1 < map.map[0].length && moved == false && character.x - e.x > 0 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null) // move horizentally +
 					{
 						e.x += 1;
 						console.log(e.x);
 						moved = true;
 					}
-					if(moved == false && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y) == null) // move horizentally +
+					if(e.x - 1 >= 0 && moved == false && character.x - e.x < 0 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y) == null) // move horizentally +
 					{
 						e.x -= 1;
 						console.log(e.x);
@@ -417,14 +417,14 @@ function Enemy_Update(attacked_enemy)
 					console.log(character.y - e.y)
 					console.log(map.collision[e.x][e.y + 1])
 					console.log(map.collision[e.x][e.y - 1])
-					if (moved == false && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+					if (e.y + 1 < map.map.length && moved == false && character.y - e.y > 0 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
 					{
 						e.y += 1;
 						console.log("Move Vertically 2 Down");
 						console.log(e.y);
 						moved = true;
 					}
-					if (moved == false && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+					if (e.y - 1 >= 0 && moved == false && character.y - e.y < 0 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
 					{
 						e.y -= 1;
 						console.log("Move Vertically 2 Up");
@@ -437,13 +437,13 @@ function Enemy_Update(attacked_enemy)
 			{
 				var probability = Math.random();
 				if(probability < 0.8){
-				if(probability < 0.2 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+				if(e.y - 1 >=0 && probability < 0.2 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
 					e.y -= 1;
-				else if(probability < 0.4 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+				else if(e.y + 1 < map.map.length && probability < 0.4 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
 					e.y += 1;
-				else if (probability < 0.6 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y ) == null)
+				else if (e.x - 1 >= 0 && probability < 0.6 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y ) == null)
 					e.x -= 1;
-				else if (probability < 0.8 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null)
+				else if (e.x + 1 < map.map[0].length && probability < 0.8 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null)
 					e.x += 1;
 				}
 				else ; // keep unmoved
@@ -522,7 +522,7 @@ function enterGameWorld()
 
 			map.draw(); 
 			character.draw();
-			Enemy_Update(enemy);
+			Enemy_Update(enemy, map);
 		}
 		if(KEYS[37] && !SHOW_MENU)  // move left
 		{
@@ -557,7 +557,7 @@ function enterGameWorld()
 
 			map.draw(); 
 			character.draw();
-			Enemy_Update(enemy);
+			Enemy_Update(enemy, map);
 		}
 		if(KEYS[39] && !SHOW_MENU)  // move right
 		{
@@ -592,7 +592,7 @@ function enterGameWorld()
 			map.draw(); 
 			character.draw();
 
-			Enemy_Update(enemy);
+			Enemy_Update(enemy, map);
 
 		}
 		if(KEYS[40] && !SHOW_MENU) // move down
@@ -627,7 +627,7 @@ function enterGameWorld()
 			map.draw(); 
 			character.draw();
 
-			Enemy_Update(enemy);
+			Enemy_Update(enemy, map);
 		}
 		if(KEYS[88])
 		{
