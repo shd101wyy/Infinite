@@ -4,6 +4,19 @@ canvas.width = 640;
 canvas.height = 64 * 12;
 canvas.style.width = canvas.width;
 canvas.style.height = canvas.height;
+
+
+var wall_image = new Image(); wall_image.src = "./Wall.png";
+var ground_image = new Image(); ground_image.src = "./Ground.png";
+var grass_image = new Image(); grass_image.src = "./Grass.png";
+var tree_image = new Image(); tree_image.src = "./Tree.png";
+var water_image = new Image(); water_image.src = "./Water.png";
+var sand_image = new Image(); sand_image.src = "./Sand.png";
+var stone_image = new Image(); stone_image.src = "./Stone.png";
+var attack_effect2 = new Image(); attack_effect2.src = "./Attack_Effect2.png";
+var mouse_image = new Image(); mouse_image.src = "./Mouse.png";
+
+
 function clearScreen()
 {
 	context.clearRect(0, 0, canvas.width, canvas.height);
@@ -19,9 +32,10 @@ function Prelude()
 	
 	context.font = "32px Arial bold";
 	context.fillStyle = "white";
-	context.fillText("Welcome to the World of Infinity. Version 0.1",100,150);
+	context.fillText("Welcome to the World of Infinity.",100,150);
 	//context.fillText("This world doesn't have any light.", 100, 200);
 	//context.fillText("Everything is in dark...", 100, 250);
+	context.fillText("Version 0.1", 100, 300);
 
 	setTimeout(function()
 	{
@@ -97,6 +111,7 @@ var Character = function()
 	this.y = 5;
 	this.level = 1;
 	this.hp = 30;
+	this.max_hp = 30;
 	this.experience = 0;
 	this.attack_damage = 5;
 	this.evasion = 0.005; // evasion
@@ -118,6 +133,10 @@ function Character_CheckLevelUp(killed_enemy)
 	{
 		character.level += 1; // level up;
 		character.experience -=  character.hp * 10; // update experience
+		character.evasion += 0.005;
+		character.attack_damage += 3;
+		character.max_hp += 20;
+		character.hp = character.max_hp;
 	}
 }
 var Slime = function()
@@ -132,6 +151,26 @@ var Slime = function()
 	this.hostile = 4;
 	this.exp = 20;
 	this.name = "Slime";
+	this.draw = function()
+	{
+		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
+	}
+}
+
+var Mouse = function(x, y)
+{
+	this.image = mouse_image;
+	this.x = 0;
+	this.y = 0;
+	if(typeof(x)!=="undefined") this.x = x;
+	if(typeof(y)!=="undefined") this.y = y;
+
+	this.level = 1;
+	this.hp = 30;
+	this.attack_damage = 2;
+	this.hostile = 8;
+	this.exp = 45;
+	this.name = "Cute Mouse";
 	this.draw = function()
 	{
 		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
@@ -198,7 +237,8 @@ var character = new Character();
 var slime = new Slime();
 var slime2 = new Slime();
 slime2.y = 3;  slime2.x = 2;
-ENEMIES.push(slime, slime2);
+var mouse = new Mouse(2, 0);
+ENEMIES.push(slime, slime2, mouse);
 
 /*
 	check enemy exist at that position
@@ -326,21 +366,28 @@ function Enemy_Update(attacked_enemy)
 					}	
 				}
 			}
+			else  // didn't find character.
+				  // so random move
+			{
+				var probability = Math.random();
+				if(probability < 0.8){
+				if(probability < 0.2 && map.collision[e.y - 1][e.x] == 0 && Enemy_Exist(e.x, e.y - 1) == null)
+					e.y -= 1;
+				else if(probability < 0.4 && map.collision[e.y + 1][e.x] == 0 && Enemy_Exist(e.x, e.y + 1) == null)
+					e.y += 1;
+				else if (probability < 0.6 && map.collision[e.y][e.x - 1] == 0 && Enemy_Exist(e.x - 1, e.y ) == null)
+					e.x -= 1;
+				else if (probability < 0.8 && map.collision[e.y][e.x + 1] == 0 && Enemy_Exist(e.x + 1, e.y) == null)
+					e.x += 1;
+				}
+				else ; // keep unmoved
+			}
 		}
 		e.draw();
 		if (e == attacked_enemy)
 			context.drawImage(attack_effect2, e.x*64, e.y*64, 64, 64);
 	}
 }
-var wall_image = new Image(); wall_image.src = "./Wall.png";
-var ground_image = new Image(); ground_image.src = "./Ground.png";
-var grass_image = new Image(); grass_image.src = "./Grass.png";
-var tree_image = new Image(); tree_image.src = "./Tree.png";
-var water_image = new Image(); water_image.src = "./Water.png";
-var sand_image = new Image(); sand_image.src = "./Sand.png";
-var stone_image = new Image(); stone_image.src = "./Stone.png";
-var attack_effect2 = new Image(); attack_effect2.src = "./Attack_Effect2.png";
-
 /*
 	Tree Resources
 */
