@@ -16,6 +16,7 @@ var stone_image = new Image(); stone_image.src = "./Stone.png";
 var attack_effect2 = new Image(); attack_effect2.src = "./Attack_Effect2.png";
 var mouse_image = new Image(); mouse_image.src = "./Mouse.png";
 var ghost1 = new Image(); ghost1.src = "./Ghost1.png";
+var bat_image = new Image(); bat_image.src = "./Bat.png";
 
 function clearScreen()
 {
@@ -115,6 +116,7 @@ var Character = function()
 	this.experience = 0;
 	this.attack_damage = 5;
 	this.evasion = 0.005; // evasion
+	this.inventory = {};  // inventory
 	this.draw = function()
 	{
 		if(this.count % 20 == 0)
@@ -176,7 +178,25 @@ var Mouse = function(x, y)
 		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
 	}
 }
+var Bat = function(x, y)
+{
+	this.image = bat_image;
+	this.x = 0;
+	this.y = 0;
+	if(typeof(x)!=="undefined") this.x = x;
+	if(typeof(y)!=="undefined") this.y = y;
 
+	this.level = 1;
+	this.hp = 40;
+	this.attack_damage = 6;
+	this.hostile = 14;
+	this.exp = 80;
+	this.name = "Cute Bat";
+	this.draw = function()
+	{
+		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
+	}
+}
 var Ghost = function(x, y)
 {
 	this.image = ghost1;
@@ -259,7 +279,8 @@ var slime2 = new Slime();
 slime2.y = 3;  slime2.x = 2;
 var mouse = new Mouse(2, 0);
 var ghost = new Ghost(3, 0);
-ENEMIES.push(slime, slime2, mouse, ghost);
+var bat = new Bat(4, 0);
+ENEMIES.push(slime, slime2, mouse, ghost, bat);
 
 /*
 	check enemy exist at that position
