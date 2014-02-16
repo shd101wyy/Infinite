@@ -122,9 +122,9 @@ var Character = function()
 	this.draw = function()
 	{
 		if(this.count % 20 == 0)
-			context.drawImage(this.image[0], this.x * 64, this.y * 64, 64, 64);
+			context.drawImage(this.image[0], this.fixed_position_x %10 * 64, this.fixed_position_y %10 * 64, 64, 64);
 		else
-			context.drawImage(this.image[1], this.x * 64, this.y * 64, 64, 64);
+			context.drawImage(this.image[1], this.fixed_position_x %10 * 64, this.fixed_position_y %10 * 64, 64, 64);
 		this.count++;
 	}
 }
@@ -157,8 +157,9 @@ var Slime = function()
 	this.name = "Cute Slime";
 	this.draw = function()
 	{
-		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
-	}
+		var x = character.x - character.fixed_position_x;
+		var y = character.y - character.fixed_position_y;
+		context.drawImage(this.image, (this.x - x) * 64, (this.y - y)*64, 64, 64);	}
 }
 
 var Mouse = function(x, y)
@@ -177,7 +178,9 @@ var Mouse = function(x, y)
 	this.name = "Cute Mouse";
 	this.draw = function()
 	{
-		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
+		var x = character.x - character.fixed_position_x;
+		var y = character.y - character.fixed_position_y;
+		context.drawImage(this.image, (this.x - x) * 64, (this.y - y)*64, 64, 64);
 	}
 }
 var Bat = function(x, y)
@@ -196,7 +199,9 @@ var Bat = function(x, y)
 	this.name = "Cute Bat";
 	this.draw = function()
 	{
-		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
+		var x = character.x - character.fixed_position_x;
+		var y = character.y - character.fixed_position_y;
+		context.drawImage(this.image, (this.x - x) * 64, (this.y - y)*64, 64, 64);
 	}
 }
 var Ghost = function(x, y)
@@ -215,8 +220,9 @@ var Ghost = function(x, y)
 	this.name = "Cute Ghost";
 	this.draw = function()
 	{
-		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
-	}
+		var x = character.x - character.fixed_position_x;
+		var y = character.y - character.fixed_position_y;
+		context.drawImage(this.image, (this.x - x) * 64, (this.y - y)*64, 64, 64);	}
 }
 /*
 	create village
@@ -224,37 +230,53 @@ var Ghost = function(x, y)
 var Map = function()
 {
 	var map = 
-	[[0,0,0,0,0,0,0,0,0,0],
-	 [0,0,0,0,0,0,0,0,0,0],
-	 [0,1,1,1,1,1,1,1,1,0],
-	 [0,1,0,0,0,0,0,0,1,0],
-	 [0,1,0,2,2,0,0,0,1,0],
-	 [0,1,0,2,2,0,0,0,1,0],
-	 [0,1,0,0,0,0,0,0,1,0],
-	 [0,1,1,1,0,0,1,1,1,0],
-	 [0,0,0,0,0,0,0,0,0,0],
-	 [0,0,0,0,0,0,0,0,0,0]
+	[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,2,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,2,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+
 	]
 	this.collision = 
-	[[0,0,0,0,0,0,0,0,0,0],
-	 [0,0,0,0,0,0,0,0,0,0],
-	 [0,1,1,1,1,1,1,1,1,0],
-	 [0,1,0,0,0,0,0,0,1,0],
-	 [0,1,0,1,1,0,0,0,1,0],
-	 [0,1,0,1,1,0,0,0,1,0],
-	 [0,1,0,0,0,0,0,0,1,0],
-	 [0,1,1,1,0,0,1,1,1,0],
-	 [0,0,0,0,0,0,0,0,0,0],
-	 [0,0,0,0,0,0,0,0,0,0]
+	[[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,1,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,1,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 	]
 
 	this.draw = function()
 	{
-		for(var i = 0; i < map.length; i++)
+		// 计算相对于玩家的相对位置
+		var x = character.x - character.fixed_position_x;
+		var y = character.y - character.fixed_position_y;
+		for(var i = 0; i < 12; i++)
 		{
-			for(var j = 0; j < map[0].length; j++)
+			for(var j = 0; j < 10; j++)
 			{
-				var v = map[i][j];
+				if( i + y >= map.length || j + x >= map[i].length || i + y < 0 || j + x < 0)
+					continue;
+				var v = map[i + y][j + x];
 				if(v == 0)
 					//context.drawImage(ground_image, j*64, i*64, 64, 64);
 					context.drawImage(grass_image, j*64, i*64, 64, 64);
@@ -429,7 +451,11 @@ function Enemy_Update(attacked_enemy)
 		}
 		e.draw();
 		if (e == attacked_enemy)
-			context.drawImage(attack_effect2, e.x*64, e.y*64, 64, 64);
+		{
+			var x = character.x - character.fixed_position_x;
+			var y = character.y - character.fixed_position_y;
+			context.drawImage(attack_effect2, (e.x - x)*64, (e.y - y)*64, 64, 64);
+		}
 	}
 }
 /*
@@ -493,8 +519,9 @@ function enterGameWorld()
 			}
 			if(map.collision[character.y][character.x])
 				character.y += 1;
-			character.draw();
 
+			map.draw(); 
+			character.draw();
 			Enemy_Update(enemy);
 		}
 		if(KEYS[37] && !SHOW_MENU)  // move left
@@ -527,15 +554,15 @@ function enterGameWorld()
 
 			if(map.collision[character.y][character.x])
 				character.x += 1;
-			character.draw();
 
+			map.draw(); 
+			character.draw();
 			Enemy_Update(enemy);
 		}
 		if(KEYS[39] && !SHOW_MENU)  // move right
 		{
 			KEYS[39] = false;
 			clearScreen(); // clear canvas
-			map.draw(); 
 			character.x += 1;
 
 			// check enemy 
@@ -561,6 +588,8 @@ function enterGameWorld()
 
 			if(map.collision[character.y][character.x])
 				character.x -= 1;
+
+			map.draw(); 
 			character.draw();
 
 			Enemy_Update(enemy);
@@ -570,7 +599,6 @@ function enterGameWorld()
 		{
 			KEYS[40] = false;
 			clearScreen(); // clear canvas
-			map.draw(); 
 			character.y += 1;
 
 			// check enemy 
@@ -596,6 +624,7 @@ function enterGameWorld()
 
 			if(map.collision[character.y][character.x])
 				character.y -= 1;
+			map.draw(); 
 			character.draw();
 
 			Enemy_Update(enemy);
