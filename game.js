@@ -15,7 +15,7 @@ var sand_image = new Image(); sand_image.src = "./Sand.png";
 var stone_image = new Image(); stone_image.src = "./Stone.png";
 var attack_effect2 = new Image(); attack_effect2.src = "./Attack_Effect2.png";
 var mouse_image = new Image(); mouse_image.src = "./Mouse.png";
-
+var ghost1 = new Image(); ghost1.src = "./Ghost1.png";
 
 function clearScreen()
 {
@@ -150,7 +150,7 @@ var Slime = function()
 	this.attack_damage = 1;
 	this.hostile = 4;
 	this.exp = 20;
-	this.name = "Slime";
+	this.name = "Cute Slime";
 	this.draw = function()
 	{
 		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
@@ -171,6 +171,26 @@ var Mouse = function(x, y)
 	this.hostile = 8;
 	this.exp = 45;
 	this.name = "Cute Mouse";
+	this.draw = function()
+	{
+		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
+	}
+}
+
+var Ghost = function(x, y)
+{
+	this.image = ghost1;
+	this.x = 0;
+	this.y = 0;
+	if(typeof(x)!=="undefined") this.x = x;
+	if(typeof(y)!=="undefined") this.y = y;
+
+	this.level = 1;
+	this.hp = 50;
+	this.attack_damage = 4;
+	this.hostile = 12;
+	this.exp = 60;
+	this.name = "Cute Ghost";
 	this.draw = function()
 	{
 		context.drawImage(this.image, this.x * 64, this.y*64, 64, 64);
@@ -238,7 +258,8 @@ var slime = new Slime();
 var slime2 = new Slime();
 slime2.y = 3;  slime2.x = 2;
 var mouse = new Mouse(2, 0);
-ENEMIES.push(slime, slime2, mouse);
+var ghost = new Ghost(3, 0);
+ENEMIES.push(slime, slime2, mouse, ghost);
 
 /*
 	check enemy exist at that position
