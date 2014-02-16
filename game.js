@@ -117,6 +117,8 @@ var Character = function()
 	this.attack_damage = 5;
 	this.evasion = 0.005; // evasion
 	this.inventory = {};  // inventory
+	this.fixed_position_x = 5;
+	this.fixed_position_y = 5;
 	this.draw = function()
 	{
 		if(this.count % 20 == 0)
@@ -408,7 +410,7 @@ function Enemy_Update(attacked_enemy)
 					}	
 				}
 			}
-			else  // didn't find character.
+			if(distance > hostile && moved == false )  // didn't find character.
 				  // so random move
 			{
 				var probability = Math.random();
